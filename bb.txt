@@ -1,0 +1,124 @@
+main
+=====
+
+package com.example.application0201;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+
+public class AddSubject extends AppCompatActivity {
+
+    EditText subject_code,subject_name,subject_credit;
+    Button subject_add;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_add_subject);
+
+        subject_code = (EditText) findViewById(R.id.sub_codeid);
+        subject_name = (EditText) findViewById(R.id.sub_nameid);
+        subject_credit = (EditText) findViewById(R.id.sub_creditid);
+        subject_add = (Button) findViewById(R.id.add_buttonid);
+
+       subject_add.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View view) {
+
+               String code = subject_code.getText().toString();
+               String name = subject_name.getText().toString();
+               int credit = Integer.parseInt(subject_credit.getText().toString());
+
+
+               //call addSubject method() - 1 Create object and call
+
+               DBHelper dbHelper = new DBHelper(AddSubject.this);
+
+               dbHelper.addSubject(code,name,credit);
+
+           }
+       });
+
+
+    }
+}
+
+
+dbhelper
+========
+package com.example.application0201;
+
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+import android.widget.Toast;
+
+import androidx.annotation.Nullable;
+
+public class DBHelper extends SQLiteOpenHelper {
+
+    private Context context;
+    private static final String DB_NAME = "subjectDetails.db"; //database name
+    private static final int DB_VERSION = 1; //version
+    private static final String TABLE_NAME = "subjects"; //creating table parts
+    private static final String COLUMN_ID = "id";
+    private static final String COLUMN_CODE = "subject_code";
+    private static final String COLUMN_NAME = "subject_name";
+    private static final String COLUMN_CREDIT = "subject_credit";
+
+    public DBHelper(@Nullable Context context) {
+        super(context, DB_NAME, null, DB_VERSION); //up things called here
+        this.context = context;
+    }
+
+    @Override
+    public void onCreate(SQLiteDatabase db) {
+        String query = " CREATE TABLE " + TABLE_NAME + "(" +
+                COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT ," +
+                COLUMN_CODE + " TEXT ," +
+                COLUMN_NAME + " TEXT ," +
+                COLUMN_CREDIT + " INTEGER)"; //like we create a table on sql create table here
+
+        db.execSQL(query);
+    }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
+        sqLiteDatabase.execSQL(" DROP TABLE IF EXISTS " + TABLE_NAME);
+    }
+        //CRUD
+    /*
+        C - CREATE/ADD
+        R - READ
+        U - UPDATE
+        D - DELETE
+        S - SEARCHING
+     */
+        public void addSubject (String code, String name,int credit){
+            //1.Need to write permission
+            SQLiteDatabase db = this.getWritableDatabase();
+
+            //2.ContentValue - Store like array
+            ContentValues cv = new ContentValues();
+
+            //3.Insert columns in to cv
+            cv.put(COLUMN_CODE, code);
+            cv.put(COLUMN_NAME, name);
+            cv.put(COLUMN_CREDIT, credit);
+
+            //insert table into database
+            long result = db.insert(TABLE_NAME,null,cv);
+
+            if (result == -1) { //-1 means inserting error
+                Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(context, "Data Added", Toast.LENGTH_SHORT).show();
+            }
+
+        }
+    }
