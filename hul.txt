@@ -1,0 +1,221 @@
+    android:layout_margin="10dp"
+    tools:context=".MainActivity" >
+
+
+    <Button
+        android:text="Submit5"
+        android:id="@+id/id5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/id3"
+        android:layout_alignParentLeft="true"
+        android:layout_toLeftOf="@+id/id6">
+    </Button>
+
+    <Button
+        android:text="Submit6"
+        android:id="@+id/id6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/id3"
+        android:layout_alignParentRight="true"/>
+        android:layout_toRightOf="@+id/id5">
+    </Button>
+
+</RelativeLayout>
+
+
+EditText editText1,editText2;
+RadioButton radioButton1,radioButton2,radioButton3,radioButton4;
+
+editText1 = (EditText) findViewById(R.id.input1);
+
+T
+===
+String input1 = editText1.getText().toString();
+                String input2 = editText2.getText().toString();
+
+
+
+                if (input1.isEmpty() || input2.isEmpty()){
+                    Toast.makeText(MainActivity.this, "Fill all values", Toast.LENGTH_SHORT).show();
+                }else {
+
+                    Integer number1 = Integer.valueOf(input1);
+                    Integer number2 = Integer.valueOf(input2);
+
+                    if (radioButton1.isChecked()){
+                        Integer Add = number1 + number2;
+
+all
+====
+
+String input1 = editText1.getText().toString();
+                String input2 = editText2.getText().toString();
+
+                Integer number1 = Integer.valueOf(input1);
+                Integer number2 = Integer.valueOf(input2);
+
+                Integer Sub = number1 - number2;
+
+                String SubString = String.valueOf(Sub);
+
+                textView1.setText(SubString);
+
+
+clear
+======
+editText1.setText(null);
+editText2.setText(null);
+
+IntNOr
+======
+Intent intent = new Intent(MainActivity.this,AboutUs.class);
+                startActivity(intent);
+
+
+
+
+INtDT
+=====
+if(input1.equals("admin@mail.com") && input2.equals("12345")){
+
+                        Intent intent = new Intent(MainActivity.this,WelcomeShow.class);
+                        intent.putExtra("email",input1);
+                        intent.putExtra("password",input2);
+                        startActivity(intent);
+
+ Bundle bundle = getIntent().getExtras();
+
+        if (bundle != null){
+            String input1 = bundle.getString("email");
+            textView1.setText(input1);
+            String input2 = bundle.getString("password");
+            textView2.setText(input2);
+
+
+
+main
+=====
+
+package com.example.application0201;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+
+public class AddSubject extends AppCompatActivity {
+
+    EditText subject_code,subject_name,subject_credit;
+    Button subject_add;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_add_subject);
+
+        subject_code = (EditText) findViewById(R.id.sub_codeid);
+        subject_name = (EditText) findViewById(R.id.sub_nameid);
+        subject_credit = (EditText) findViewById(R.id.sub_creditid);
+        subject_add = (Button) findViewById(R.id.add_buttonid);
+
+       subject_add.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View view) {
+
+               String code = subject_code.getText().toString();
+               String name = subject_name.getText().toString();
+               int credit = Integer.parseInt(subject_credit.getText().toString());
+
+
+               //call addSubject method() - 1 Create object and call
+
+               DBHelper dbHelper = new DBHelper(AddSubject.this);
+
+               dbHelper.addSubject(code,name,credit);
+
+           }
+       });
+
+
+    }
+}
+
+
+dbhelper
+========
+package com.example.application0201;
+
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+import android.widget.Toast;
+
+import androidx.annotation.Nullable;
+
+public class DBHelper extends SQLiteOpenHelper {
+
+    private Context context;
+    private static final String DB_NAME = "subjectDetails.db"; //database name
+    private static final int DB_VERSION = 1; //version
+    private static final String TABLE_NAME = "subjects"; //creating table parts
+    private static final String COLUMN_ID = "id";
+    private static final String COLUMN_CODE = "subject_code";
+    private static final String COLUMN_NAME = "subject_name";
+    private static final String COLUMN_CREDIT = "subject_credit";
+
+    public DBHelper(@Nullable Context context) {
+        super(context, DB_NAME, null, DB_VERSION); //up things called here
+        this.context = context;
+    }
+
+    @Override
+    public void onCreate(SQLiteDatabase db) {
+        String query = " CREATE TABLE " + TABLE_NAME + "(" +
+                COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT ," +
+                COLUMN_CODE + " TEXT ," +
+                COLUMN_NAME + " TEXT ," +
+                COLUMN_CREDIT + " INTEGER)"; //like we create a table on sql create table here
+
+        db.execSQL(query);
+    }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
+        sqLiteDatabase.execSQL(" DROP TABLE IF EXISTS " + TABLE_NAME);
+    }
+        //CRUD
+    /*
+        C - CREATE/ADD
+        R - READ
+        U - UPDATE
+        D - DELETE
+        S - SEARCHING
+     */
+        public void addSubject (String code, String name,int credit){
+            
+            SQLiteDatabase db = this.getWritableDatabase();
+
+            
+            ContentValues cv = new ContentValues();
+
+            
+            cv.put(COLUMN_CODE, code);
+            cv.put(COLUMN_NAME, name);
+            cv.put(COLUMN_CREDIT, credit);
+
+            
+            long result = db.insert(TABLE_NAME,null,cv);
+
+            if (result == -1) { //-1 means inserting error
+                Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(context, "Data Added", Toast.LENGTH_SHORT).show();
+            }
+
+        }
+    }
